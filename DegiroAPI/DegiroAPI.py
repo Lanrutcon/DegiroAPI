@@ -268,7 +268,7 @@ class DegiroAPI:
         return res.json()
 
 
-    def confirm_order(self, session, order, confirmation_id):
+    def confirm_order(self, order, confirmation_id):
         """
         Confirms an order
         
@@ -305,11 +305,11 @@ class DegiroAPI:
             Order's data 
         """
         
-        res = self.check_order(self.session, order)
+        res = self.check_order(order)
         order_status = res.get("status")
         if res['data']['confirmationId'] != '':
             confirm_id = res['data']['confirmationId']
-            confirmation_res = self.confirm_order(self.session, order, str(confirm_id))
+            confirmation_res = self.confirm_order(order, str(confirm_id))
             return confirmation_res
         else:
             return res
