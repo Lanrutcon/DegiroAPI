@@ -62,9 +62,9 @@ class DegiroAPI:
         res = self.session.get(config_url)
         if res.status_code == requests.codes.ok:
             res_json = json.loads(res.content)
-            self.pa_url = res_json['paUrl']
-            self.product_search_url = res_json['productSearchUrl']
-            self.trading_url = res_json['tradingUrl']
+            self.pa_url = res_json['data']['paUrl']
+            self.product_search_url = res_json['data']['productSearchUrl']
+            self.trading_url = res_json['data']['tradingUrl']
         else:
             print("Config Error: ", res.status_code)
 
@@ -168,7 +168,7 @@ class DegiroAPI:
             print("Get Open Orders Error: ", res.status_code)
 
 
-    def search_product(self, search_symbol, sort_column = 'name', sort_type = 'asc', product_type=product_types.get("all"), limit=7, offset=0):
+    def search_product(self, search_symbol, sort_column = None, sort_type = None, product_type=product_types.get("all"), limit=7, offset=0):
         """
         Search a product based on various criterion
         
@@ -268,7 +268,7 @@ class DegiroAPI:
         return res.json()
 
 
-    def confirm_order(self, session, order, confirmation_id):
+    def confirm_order(self, order, confirmation_id):
         """
         Confirms an order
         
@@ -305,11 +305,11 @@ class DegiroAPI:
             Order's data 
         """
         
-        res = self.check_order(self.session, order)
+        res = self.check_order(order)
         order_status = res.get("status")
         if res['data']['confirmationId'] != '':
             confirm_id = res['data']['confirmationId']
-            confirmation_res = self.confirm_order(self.session, order, str(confirm_id))
+            confirmation_res = self.confirm_order(order, str(confirm_id))
             return confirmation_res
         else:
             return res
