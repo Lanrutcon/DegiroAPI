@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='DegiroAPI',
-    version='1.0.0',
+    version='1.0.1',
     description='Unofficial DEGIRO API for Python',
     url='https://github.com/lanrutcon/DegiroAPI-Python',
     author='lanrutcon',

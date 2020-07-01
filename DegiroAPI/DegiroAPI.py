@@ -37,8 +37,8 @@ class DegiroAPI:
             "username": self.username,
             "password": self.password,
             "isRedirectToMobile": False,
-            "loginButtonUniversal": '',
-            "queryParams": {'reason': 'session_expired'},
+            "isPassCodeReset": '',
+            "queryParams": {},
         }
 
         session = requests.session()
@@ -48,6 +48,7 @@ class DegiroAPI:
             self.session_id = res.cookies.get('JSESSIONID')
             self.get_config()
             self.get_client_info()
+            self.get_account_info()
         else:
             print("Login Error: ", res.json())
 
@@ -83,6 +84,15 @@ class DegiroAPI:
             self.user_token = res_json['data']['id']
         else:
             print("Config Info Error: ", res.status_code)
+
+
+    def get_account_info(self):
+        """
+        Get URL's from server (this needs to be called in order to set orders without the need to login DEGIRO via app or browser)
+        """
+        
+        url = self.base_url + '/trading/secure/v5/account/info/{account_no};jsessionid={jsessionid}'.format(account_no=self.account_no, jsessionid=self.session_id)
+        res = self.session.get(url, cookies={ 'JSESSIONID': self.session_id } )        
 
 
     def get_portfolio(self):
