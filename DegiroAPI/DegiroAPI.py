@@ -125,7 +125,7 @@ class DegiroAPI:
                 jsession_id=self.session_id),
             params={'cashFunds': 0})
         if res.status_code == requests.codes.ok or res.status_code == 201:
-            return res.json()['cashFunds']['value'][5]['value'][2]['value'] #return EUR
+            return res.json()['cashFunds']['value']
         else:
             print("Get Cash Funds Error: ", res.status_code)
 
@@ -178,7 +178,7 @@ class DegiroAPI:
             print("Get Open Orders Error: ", res.status_code)
 
 
-    def search_product(self, search_symbol, sort_column = None, sort_type = None, product_type=product_types.get("all"), limit=7, offset=0):
+    def search_product(self, search_symbol, sort_column = None, sort_type = None, product_type=product_types.get("all"), limit=7, offset=0, isID = False):
         """
         Search a product based on various criterion
         
@@ -222,7 +222,9 @@ class DegiroAPI:
             searchDict = json.loads(json.dumps(res.json()))['products']
             
             for stock in searchDict:
-                if stock['symbol'] == search_symbol:
+                if not isID and stock['symbol'] == search_symbol:
+                    return stock
+                elif isID and stock['id'] == search_symbol:
                     return stock
 
             return '"Error in searching product", No stock found with symbol:{stock_symbol}'.format(stock_symbol=search_symbol)
