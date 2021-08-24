@@ -178,7 +178,7 @@ class DegiroAPI:
             print("Get Open Orders Error: ", res.status_code)
 
 
-    def search_product(self, search_symbol, sort_column = None, sort_type = None, product_type=product_types.get("all"), limit=7, offset=0, isID = False):
+    def search_product(self, search_symbol, sort_column = None, sort_type = None, product_type=product_types.get("all"), limit=7, offset=0, ISIN = False):
         """
         Search a product based on various criterion
         
@@ -193,9 +193,11 @@ class DegiroAPI:
         product_type : int
             Filter for a type. Check constants.py. Default value 'None'
         limit : int
-            Number of results. Default value 7        
+            Number of results. Default value 7
         offset : int
             Results offset. Default value 0
+        ISIN : str
+            Search for stock's ISIN instead. Useful when ticker symbol is not enough. Default value 'False'
             
         Returns
         -------
@@ -204,7 +206,7 @@ class DegiroAPI:
         """
     
         payload = {
-            'searchText': search_symbol,
+            'searchText': ISIN if ISIN != False else search_symbol,
             'productTypeId': product_type,
             'sortColumns': sort_column,
             'sortTypes': sort_type,
@@ -216,15 +218,14 @@ class DegiroAPI:
             search_url=self.product_search_url,
             account_id=self.account_no,
             session_id=self.session_id)
-
+        
         res = self.session.get(search_url, params=payload)
         if res.status_code == requests.codes.ok:
             searchDict = json.loads(json.dumps(res.json()))['products']
-            
             for stock in searchDict:
-                if not isID and stock['symbol'] == search_symbol:
+                if not ISIN and stock['symbol'] == search_symbol:
                     return stock
-                elif isID and stock['id'] == search_symbol:
+                elif ISIN and stock['isin'] == ISIN and stock['symbol'] == search_symbol:
                     return stock
 
             return '"Error in searching product", No stock found with symbol:{stock_symbol}'.format(stock_symbol=search_symbol)
