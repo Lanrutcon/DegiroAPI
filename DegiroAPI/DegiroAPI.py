@@ -16,6 +16,7 @@ class DegiroAPI:
         
         self.username = user
         self.password = password
+        self.headers = base_headers
         self.session_id = None
         self.account_no = None
         self.session = None
@@ -42,6 +43,7 @@ class DegiroAPI:
         }
 
         session = requests.session()
+        session.headers.update(self.headers)
         res = session.post(url, json.dumps(payload))
         if res.cookies.get("JSESSIONID"):
             self.session = session
