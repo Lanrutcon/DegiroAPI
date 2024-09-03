@@ -1,10 +1,11 @@
 import requests
+import pyotp
 import json
 from .constants import *
 
 class DegiroAPI:
 
-    def __init__(self, user, password):
+    def __init__(self, user, password, otp):
         """
         Parameters
         ----------
@@ -16,6 +17,7 @@ class DegiroAPI:
         
         self.username = user
         self.password = password
+        self.otp = otp
         self.headers = base_headers
         self.session_id = None
         self.account_no = None
@@ -32,14 +34,15 @@ class DegiroAPI:
         """
         Logs in to the server
         """
-    
-        url = self.base_url + '/login/secure/login'
+        
+        url = self.base_url + '/login/secure/login/totp'
         payload = {
             "username": self.username,
             "password": self.password,
             "isRedirectToMobile": False,
             "isPassCodeReset": '',
             "queryParams": {},
+            "oneTimePassword": pyotp.TOTP(self.otp).now()
         }
 
         session = requests.session()
